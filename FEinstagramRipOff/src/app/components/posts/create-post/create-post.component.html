@@ -1,0 +1,88 @@
+<div class="modal-overlay" *ngIf="isVisible" (click)="cancel()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Create New Post</h2>
+      <button class="close-btn" (click)="cancel()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading...</p>
+    </div>
+
+    <!-- Form Content -->
+    <form *ngIf="!isLoading" (ngSubmit)="submitPost()" class="create-post-form">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input
+          type="text"
+          id="title"
+          [(ngModel)]="newPost.title"
+          name="title"
+          placeholder="Enter post title"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="text">Content</label>
+        <textarea
+          id="text"
+          [(ngModel)]="newPost.text"
+          name="text"
+          placeholder="Write your post content..."
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="pictureUrl">Image URL (optional)</label>
+        <input
+          type="url"
+          id="pictureUrl"
+          [(ngModel)]="newPost.pictureUrl"
+          name="pictureUrl"
+          placeholder="Enter image URL"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Select Tags (up to 8)</label>
+        <div class="tags-container">
+          <button
+            *ngFor="let tag of randomTags"
+            type="button"
+            class="tag-btn"
+            [class.selected]="isTagSelected(tag.id)"
+            (click)="toggleTag(tag.id)"
+          >
+            #{{ tag.name }}
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="error" class="error-message">
+        {{ error }}
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="cancel()">
+          Cancel
+        </button>
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="isSubmitting"
+        >
+          {{ isSubmitting ? "Creating..." : "Create Post" }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

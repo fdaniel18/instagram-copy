@@ -1,0 +1,62 @@
+<div class="post-list-container">
+  <app-header
+    (createPost)="toggleCreatePost()"
+  ></app-header>
+
+  <div class="content-container">
+    <!-- Create Post Modal -->
+    <app-create-post
+      [isVisible]="isCreatingPost"
+      [tags]="tags"
+      (postCreated)="onPostCreated($event)"
+      (cancelled)="isCreatingPost = false"
+    >
+    </app-create-post>
+
+    <!-- Search Section -->
+    <div class="search-section">
+      <div class="search-container">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          [placeholder]="'Search by ' + searchType"
+          class="search-input"
+          (input)="filterPosts()"
+        />
+        <select [(ngModel)]="searchType" (change)="filterPosts()" class="search-type-select">
+          <option value="title">Title</option>
+          <option value="user">User</option>
+          <option value="tag">Tag</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="loading.posts" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading posts...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error.posts" class="error-state">
+      <p>{{ error.posts }}</p>
+      <button class="retry-btn" (click)="loadPosts()">Try Again</button>
+    </div>
+
+    <!-- Posts List -->
+    <div *ngIf="!loading.posts && !error.posts" class="posts-list">
+      <div *ngIf="filteredPosts.length === 0" class="empty-state">
+        <p>No posts found matching your criteria.</p>
+      </div>
+
+      <app-post-item
+        *ngFor="let post of filteredPosts"
+        [post]="post"
+        [currentUser]="currentUser"
+        (commentAdded)="onCommentAdded($event)"
+        (voted)="onVote($event)"
+      >
+      </app-post-item>
+    </div>
+  </div>
+</div>

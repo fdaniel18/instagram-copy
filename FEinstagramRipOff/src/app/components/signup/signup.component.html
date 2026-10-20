@@ -1,0 +1,145 @@
+<header class="header">
+  <div class="header-content">
+    <h1>Instagram</h1>
+  </div>
+</header>
+
+<div class="signup-container">
+  <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+    <h2>Signup</h2>
+
+    <!-- Username -->
+    <div>
+      <label for="username">Username</label>
+      <input
+        id="username"
+        formControlName="username"
+        type="text"
+        placeholder="Username"
+        [class.invalid]="
+          signupForm.controls['username'].invalid &&
+          signupForm.controls['username'].touched
+        "
+      />
+      <div
+        *ngIf="
+          signupForm.controls['username'].invalid &&
+          signupForm.controls['username'].touched
+        "
+        class="error"
+      >
+        Username is required.
+      </div>
+    </div>
+
+    <!-- Email -->
+    <div>
+      <label for="email">Email</label>
+      <input
+        id="email"
+        formControlName="email"
+        type="email"
+        placeholder="Email"
+        [class.invalid]="
+          signupForm.controls['email'].invalid &&
+          signupForm.controls['email'].touched
+        "
+      />
+      <div
+        *ngIf="
+          signupForm.controls['email'].invalid &&
+          signupForm.controls['email'].touched
+        "
+        class="error"
+      >
+        Please enter a valid email.
+      </div>
+    </div>
+
+    <!-- Password -->
+    <div>
+      <label for="password">Password</label>
+      <input
+        id="password"
+        formControlName="password"
+        type="password"
+        placeholder="Password"
+        [class.invalid]="
+          signupForm.controls['password'].invalid &&
+          signupForm.controls['password'].touched
+        "
+      />
+      <div
+        *ngIf="
+          signupForm.controls['password'].invalid &&
+          signupForm.controls['password'].touched
+        "
+        class="error"
+      >
+        Password is required, at least 6 characters.
+      </div>
+    </div>
+
+    <!-- Confirm Password -->
+    <div>
+      <label for="confirmPassword">Confirm Password</label>
+      <input
+        id="confirmPassword"
+        formControlName="confirmPassword"
+        type="password"
+        placeholder="Confirm Password"
+        [class.invalid]="
+          signupForm.controls['confirmPassword'].invalid &&
+          signupForm.controls['confirmPassword'].touched
+        "
+      />
+      <div
+        *ngIf="
+          signupForm.controls['confirmPassword'].invalid &&
+          signupForm.controls['confirmPassword'].touched
+        "
+        class="error"
+      >
+        Confirm password is required.
+      </div>
+      <div
+        *ngIf="signupForm.errors?.['mismatch'] && signupForm.touched"
+        class="error"
+      >
+        Passwords do not match.
+      </div>
+    </div>
+
+    <!-- Phone Number -->
+    <div>
+      <label for="phoneNumber">Phone Number</label>
+      <input
+        id="phoneNumber"
+        formControlName="phoneNumber"
+        type="text"
+        placeholder="Phone Number"
+        [class.invalid]="
+          signupForm.controls['phoneNumber'].invalid &&
+          signupForm.controls['phoneNumber'].touched
+        "
+      />
+      <div
+        *ngIf="
+          signupForm.controls['phoneNumber'].invalid &&
+          signupForm.controls['phoneNumber'].touched
+        "
+        class="error"
+      >
+        Please enter a valid phone number.
+      </div>
+    </div>
+
+    <!-- Submit Button -->
+    <button type="submit" [disabled]="signupForm.invalid">Signup</button>
+
+    <!-- Link to Login -->
+    <p>
+      Already have an account? <a (click)="navigateToLogin()">Login here</a>
+    </p>
+  </form>
+</div>

@@ -1,0 +1,186 @@
+/* Color Variables */
+:root {
+  --primary-gradient: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+  --primary-gradient-hover: linear-gradient(45deg, #e68a2e 0%, #d95d37 25%, #c7233e 50%, #b71f5b 75%, #a7157d 100%);
+  --text-primary: #262626;
+  --text-secondary: #8e8e8e;
+  --background-primary: #ffffff;
+  --background-secondary: #fafafa;
+  --border-color: #dbdbdb;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --transition-speed: 0.2s;
+}
+
+.header-container {
+  background-color: var(--background-primary);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  .header-content {
+    max-width: 975px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--background-primary);
+  }
+
+  .left-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      border-radius: 8px;
+      transition: all var(--transition-speed);
+
+      &:hover {
+        background-color: var(--background-secondary);
+        transform: translateY(-1px);
+      }
+
+      svg {
+        color: var(--text-primary);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 700;
+        font-family: 'Segoe UI', 'Arial', sans-serif;
+        color: #0095f6;
+        text-shadow: none;
+      }
+    }
+  }
+
+  .actions-section {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: var(--text-primary);
+      background-color: var(--background-secondary);
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      text-decoration: none;
+      border: 1px solid var(--border-color);
+
+      svg {
+        width: 20px;
+        height: 20px;
+        stroke-width: 2;
+      }
+
+      &:hover {
+        background-color: var(--border-color);
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+
+      &.create-post-btn {
+        background-color: #0095f6;
+        color: white;
+        font-weight: 700;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 149, 246, 0.2);
+
+        span {
+          color: white;
+        }
+
+        &:hover {
+          background-color: #0081d6;
+          box-shadow: 0 4px 8px rgba(0, 149, 246, 0.3);
+        }
+      }
+
+      &.profile-btn {
+        background: none;
+        padding: 0.6rem 1.2rem;
+        border: 1px solid var(--border-color);
+        color: var(--text-primary);
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+          background-color: var(--background-secondary);
+          text-decoration: none;
+        }
+      }
+
+      &.admin-btn {
+        background-color: #0095f6;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 149, 246, 0.2);
+
+        &:hover {
+          background-color: #0081d6;
+          box-shadow: 0 4px 8px rgba(0, 149, 246, 0.3);
+        }
+      }
+
+      &.signout-btn {
+        background-color: #ed4956;
+        color: white;
+        border: none;
+        box-shadow: 0 2px 4px rgba(237, 73, 86, 0.2);
+
+        &:hover {
+          background-color: #dc3545;
+          box-shadow: 0 4px 8px rgba(237, 73, 86, 0.3);
+        }
+      }
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header-container {
+    .header-content {
+      padding: 0.5rem 1rem;
+    }
+
+    .actions-section {
+      .action-btn {
+        padding: 0.5rem;
+        
+        span {
+          display: none;
+        }
+
+        svg {
+          margin: 0;
+        }
+      }
+    }
+  }
+}

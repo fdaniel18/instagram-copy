@@ -1,0 +1,58 @@
+/* Paletă de culori cu tonuri calde */
+$background-color: #f5f3f0; /* Bej foarte deschis */
+$primary-color: #000000; /* Negru */
+$accent-bej: #c7a17a; /* Bej cald */
+$accent-brown-light: #a06f4b; /* Maro deschis */
+$accent-brown-dark: #654321; /* Maro închis */
+$error-color: #d32f2f; /* Roșu pentru erori */
+
+.footer {
+  background-color: white;
+  padding: 20px 0;
+  border-top: 1px solid #ddd;
+  margin-top: 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  font-size: 12px;
+}
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+  text-align: center;
+}
+
+.footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+  
+  a {
+    color: #8e8e8e;
+    text-decoration: none;
+    transition: color 0.3s ease;
+    
+    &:hover {
+      color: $accent-brown-light;
+      text-decoration: underline;
+    }
+  }
+}
+
+.copyright {
+  color: #8e8e8e;
+  font-size: 12px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .footer-links {
+    gap: 10px;
+    
+    a {
+      font-size: 11px;
+    }
+  }
+}

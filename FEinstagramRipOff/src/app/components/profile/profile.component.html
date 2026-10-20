@@ -1,0 +1,142 @@
+<div class="profile-page">
+  <!-- Add the header component -->
+  <app-header></app-header>
+
+  <div class="profile-container" *ngIf="currentUser">
+    <div class="profile-header">
+      <h2>{{ currentUser?.username }}'s Profile</h2>
+      <p class="role-badge" [ngClass]="{'admin': currentUser?.role === 'ADMIN', 'user': currentUser?.role === 'USER' || !currentUser?.role}">
+        {{ currentUser?.role || 'USER' }}
+      </p>
+    </div>
+
+    <div class="profile-content">
+      <div class="profile-info">
+        <div class="info-section">
+          <h3>Personal Information</h3>
+          <div class="info-group">
+            <label>Username:</label>
+            <span>{{ currentUser?.username }}</span>
+          </div>
+          <div class="info-group">
+            <label>Email:</label>
+            <span>{{ currentUser?.email }}</span>
+          </div>
+          <div class="info-group">
+            <label>Phone Number:</label>
+            <span>{{ currentUser.phone_number }}</span>
+          </div>
+          <div class="info-group">
+            <label>Score:</label>
+            <span>{{ currentUser?.score || 0 }}</span>
+          </div>
+          <div class="info-group">
+            <label>Role:</label>
+            <span>{{ currentUser?.role }}</span>
+          </div>
+          <div class="info-group">
+            <label>Banned:</label>
+            <span [ngClass]="{'banned': currentUser?.banned, 'not-banned': !currentUser?.banned}">
+              {{ currentUser?.banned ? 'Yes' : 'No' }}
+            </span>
+          </div>
+        </div>
+
+        <div class="actions-section">
+          <button class="edit-btn" (click)="startEditingProfile()">Edit Profile</button>
+        </div>
+      </div>
+
+      <div class="posts-section">
+        <h3>My Posts</h3>
+        <div class="search-bar">
+          <input type="text" [(ngModel)]="searchTerm" placeholder="Search posts..." />
+        </div>
+        <div class="list">
+          <div *ngFor="let post of filteredPosts" class="post-item-container">
+            <div class="post-header">
+              <h4 class="post-title">{{ post.title }}</h4>
+              <div class="post-actions">
+                <button class="details-btn" (click)="viewPostDetails(post.id)">Show Details</button>
+              </div>
+            </div>
+
+            <div class="post-image" *ngIf="post.pictureUrl">
+              <img [src]="post.pictureUrl" alt="Post image" />
+            </div>
+
+            <div class="post-content">
+              <p>{{ post.text }}</p>
+            </div>
+
+            <div class="post-footer">
+              <span class="post-date">{{ post.dateTime | date:'medium' }}</span>
+              <div class="tags" *ngIf="post.postTags && post.postTags.length > 0">
+                <span *ngFor="let postTag of post.postTags" class="tag">#{{ postTag.tag?.name || 'Unknown Tag' }}</span>
+              </div>
+            </div>
+          </div>
+          <div *ngIf="filteredPosts.length === 0" class="empty-state">
+            <p>No posts found.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <div *ngIf="isEditingProfile && currentUser" class="modal-overlay" (click)="closeModal($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Profile</h3>
+        <button class="close-btn" (click)="cancelProfileEdit()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" [(ngModel)]="editedUser.username" placeholder="Username" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" [(ngModel)]="editedUser.email" placeholder="Email" />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input id="phone" [(ngModel)]="editedUser.phone_number" placeholder="Phone Number" />
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancelProfileEdit()">Cancel</button>
+          <button class="save-btn" (click)="saveProfileChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Post Modal -->
+  <div *ngIf="isEditingPost && currentUser" class="modal-overlay" (click)="closeModal($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Post</h3>
+        <button class="close-btn" (click)="cancelPostEdit()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input id="post-title" [(ngModel)]="editedPost.title" placeholder="Title" />
+        </div>
+        <div class="form-group">
+          <label for="post-content">Content</label>
+          <textarea id="post-content" [(ngModel)]="editedPost.text" placeholder="Content" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="post-image">Image URL</label>
+          <input id="post-image" [(ngModel)]="editedPost.pictureUrl" placeholder="Image URL" />
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancelPostEdit()">Cancel</button>
+          <button class="save-btn" (click)="savePostChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div> 

@@ -1,0 +1,69 @@
+<header class="header">
+  <div class="header-content">
+    <h1>Instagram</h1>
+  </div>
+</header>
+
+<div class="login-container">
+  <div class="form-wrapper">
+    <h2>Login</h2>
+    <!-- Error Message Display -->
+    <div *ngIf="loginError" class="error-message">
+      {{ loginError }}
+    </div>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label for="username">Username</label>
+        <input
+          id="username"
+          formControlName="username"
+          type="text"
+          placeholder="Username"
+          [class.invalid]="
+            loginForm.controls['username'].invalid &&
+            loginForm.controls['username'].touched
+          "
+        />
+        <div
+          *ngIf="
+            loginForm.controls['username'].invalid &&
+            loginForm.controls['username'].touched
+          "
+          class="error"
+        >
+          Username is required.
+        </div>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <input
+          id="password"
+          formControlName="password"
+          type="password"
+          placeholder="Password"
+          [class.invalid]="
+            loginForm.controls['password'].invalid &&
+            loginForm.controls['password'].touched
+          "
+        />
+        <div
+          *ngIf="
+            loginForm.controls['password'].invalid &&
+            loginForm.controls['password'].touched
+          "
+          class="error"
+        >
+          Password is required.
+        </div>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid">Login</button>
+    </form>
+
+    <p>
+      Don't have an account?
+      <a (click)="navigateToSignup()" class="signup-link">Signup here</a>
+    </p>
+  </div>
+</div>

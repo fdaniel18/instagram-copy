@@ -1,0 +1,162 @@
+<div class="post-card">
+  <div class="post-header">
+    <div class="post-user-info">
+      <div class="user-info-row">
+        <span class="post-author">{{ post.user?.username || 'Unknown' }}</span>
+        <span class="user-score">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          {{ post.user?.score || 0 }}
+        </span>
+      </div>
+      <span class="post-date">{{ formatDate(post.dateTime) }}</span>
+    </div>
+    <div class="post-status" [ngClass]="post.status.toLowerCase()">
+      {{ post.status.replace('_', ' ') }}
+    </div>
+  </div>
+
+  <h3 class="post-title">{{ post.title }}</h3>
+  <p class="post-text">{{ post.text }}</p>
+
+  <div class="post-image-container" *ngIf="post.pictureUrl">
+    <img
+      [src]="post.pictureUrl"
+      alt="Post image"
+      class="post-image"
+      (error)="handleImageError($event)"
+    />
+  </div>
+
+  <div class="post-tags" *ngIf="post.postTags && post.postTags.length > 0">
+    <span class="post-tag" *ngFor="let postTag of post.postTags">
+      #{{ postTag.tag?.name || 'Unknown Tag' }}
+    </span>
+  </div>
+
+  <div class="post-stats">
+    <div class="comments-count">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path
+          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        />
+      </svg>
+      {{ post.comments.length || 0 }} Comments
+    </div>
+  </div>
+
+  <div class="post-actions">
+    <button class="show-details-btn" (click)="showDetails()">
+      Show Details
+    </button>
+  </div>
+
+  <div class="post-votes">
+    <button
+      class="vote-btn upvote"
+      [style.color]="getVoteColor(1)"
+      [disabled]="!currentUser"
+      (click)="upvotePost()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 19V5M5 12l7-7 7 7" />
+      </svg>
+    </button>
+    <span class="vote-count">{{ postVoteCount }}</span>
+    <button
+      class="vote-btn downvote"
+      [style.color]="getVoteColor(-1)"
+      [disabled]="!currentUser"
+      (click)="downvotePost()"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M12 5v14M5 12l7 7 7-7" />
+      </svg>
+    </button>
+  </div>
+
+  <div class="post-comments" *ngIf="showComments">
+    <div class="comments-list">
+      <div *ngIf="post.comments?.length === 0" class="no-comments">
+        <p>No comments yet. Be the first to comment!</p>
+      </div>
+
+      <div *ngFor="let comment of post.comments" class="comment">
+        <div class="comment-header">
+          <span class="comment-author">{{
+            comment.user.username || "Unknown"
+          }}</span>
+          <span class="comment-date">{{ formatDate(comment.dateTime) }}</span>
+        </div>
+        <p class="comment-text">{{ comment.text }}</p>
+      </div>
+    </div>
+
+    <div class="add-comment" *ngIf="!post.stopComments">
+      <div *ngIf="!currentUser" class="login-prompt">
+        <p>Please log in to add a comment.</p>
+      </div>
+
+      <form
+        *ngIf="currentUser"
+        (ngSubmit)="submitComment()"
+        class="comment-form"
+      >
+        <textarea
+          [(ngModel)]="newCommentText"
+          name="commentText"
+          placeholder="Write a comment..."
+          class="comment-input"
+          [disabled]="isSubmittingComment"
+        ></textarea>
+
+        <div *ngIf="commentError" class="comment-error">
+          {{ commentError }}
+        </div>
+
+        <button
+          type="submit"
+          class="submit-comment-btn"
+          [disabled]="isSubmittingComment || !newCommentText.trim()"
+        >
+          {{ isSubmittingComment ? "Posting..." : "Post Comment" }}
+        </button>
+      </form>
+    </div>
+
+    <div *ngIf="post.stopComments" class="comments-disabled">
+      <p>Comments have been disabled for this post.</p>
+    </div>
+  </div>
+</div>

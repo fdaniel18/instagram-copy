@@ -1,0 +1,62 @@
+<div class="comments-section">
+  
+  <!-- Comentarii sortate descrescător după voturi -->
+  
+  <div *ngFor="let comment of comments | orderByVotes" class="comment-card">
+  
+    <div class="comment-header">
+
+      <img
+        [src]="comment.pictureUrl"
+        alt="Profilul lui {{ comment.user.username }}"
+        class="comment-author-image"
+      />
+
+      <div>
+         <span class="comment-user">{{ comment.user.username }}</span>  
+     
+        <span class="comment-date">{{
+          comment.dateTime | date : "short"
+        }}</span>
+     
+      </div>
+      
+    </div>
+
+  
+    <p>{{ comment.text }}</p>
+
+   
+    <div class="vote-buttons">
+  
+      <button
+        (click)="vote(comment.id, 1)"
+        [disabled]="comment.user.id === userId"
+      >
+      
+      </button>
+        <span class="vote-count">{{ getVoteCount(comment) }}</span>
+      <button
+        (click)="vote(comment.id, -1)"
+        [disabled]="comment.user.id === userId"
+      >
+       
+      </button>
+      
+    </div>
+    
+  </div>
+
+  
+  <!-- Adăugare comentariu -->
+  
+  <div class="add-comment-form">
+   
+    <input
+      [(ngModel)]="newCommentText"
+      placeholder="Adaugă un comentariu"
+      class="comment-input"
+    />
+     <button (click)="addComment()">Adaugă</button> 
+  </div>
+</div>

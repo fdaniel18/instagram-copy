@@ -1,0 +1,329 @@
+<div class="post-detail-container">
+  <app-header></app-header>
+
+  <div class="content-container">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-state">
+      <div class="spinner"></div>
+      <p>Loading post...</p>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="error" class="error-state">
+      <p>{{ error }}</p>
+      <button class="back-btn" (click)="goBack()">Back to Posts</button>
+    </div>
+
+    <!-- Post Content -->
+    <div *ngIf="post && !loading && !error" class="post-content">
+      <div class="post-header">
+        <button class="back-btn" (click)="goBack()">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7" />
+          </svg>
+          Back
+        </button>
+
+        <div class="post-meta">
+          <h1 class="post-title">{{ post.title }}</h1>
+          <div class="post-info">
+            <div class="user-info">
+              <span class="post-author">{{ post.user?.username || 'Unknown' }}</span>
+              <span class="post-score">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                {{ post.user?.score || 0 }}
+              </span>
+            </div>
+            <span class="post-date">{{ formatDate(post.dateTime) }}</span>
+          </div>
+        </div>
+
+        <div class="post-status" [ngClass]="post.status.toLowerCase()">
+          {{ post.status.replace('_', ' ') }}
+        </div>
+      </div>
+
+      <div class="post-actions">
+        <div class="action-buttons">
+          <button *ngIf="canEditPost()" (click)="startEditing()" class="edit-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+              <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+            </svg>
+            Edit Post
+          </button>
+          <button *ngIf="canEditPost()" (click)="deletePost()" class="delete-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+            </svg>
+            Delete Post
+          </button>
+          <button *ngIf="canEditPost()" (click)="toggleComments()" class="toggle-comments-btn" [class.disabled]="post?.stopComments">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+            {{ post?.stopComments ? 'Enable Comments' : 'Disable Comments' }}
+          </button>
+        </div>
+      </div>
+
+      <div class="comments-status" *ngIf="post.stopComments">
+        <span class="status-badge disabled">Comments Disabled</span>
+      </div>
+
+      <div class="edit-form" *ngIf="isEditing">
+        <div class="form-group">
+          <label for="edit-title">Title</label>
+          <input id="edit-title" [(ngModel)]="editedPost.title" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label for="edit-text">Content</label>
+          <textarea id="edit-text" [(ngModel)]="editedPost.text" class="form-control" rows="4"></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="edit-image">Image URL</label>
+          <input id="edit-image" [(ngModel)]="editedPost.pictureUrl" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Tags</label>
+          <div class="tags-selection">
+            <button 
+              *ngFor="let tag of availableTags" 
+              class="tag-btn" 
+              [class.selected]="isTagSelected(tag.id)"
+              (click)="toggleTag(tag.id)"
+            >
+              {{ tag.name }}
+            </button>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancelEditing()">Cancel</button>
+          <button class="save-btn" (click)="saveChanges()">Save Changes</button>
+        </div>
+      </div>
+
+      <div class="post-body">
+        <div class="post-text">{{ post.text }}</div>
+
+        <div class="post-image-container" *ngIf="post.pictureUrl">
+          <img
+            [src]="post.pictureUrl"
+            alt="Post image"
+            class="post-image"
+            (error)="handleImageError($event)"
+            #postImage
+          />
+        </div>
+
+        <div class="post-tags" *ngIf="post.postTags && post.postTags.length > 0">
+          <span class="post-tag" *ngFor="let postTag of post.postTags">
+            #{{ postTag.tag?.name || 'Unknown Tag' }}
+          </span>
+        </div>
+
+        <div class="post-actions">
+          <div class="votes">
+            <button
+              *ngIf="canUserVoteOnPost()"
+              class="vote-btn upvote"
+              [class.active]="hasUserVoted(post.votes) === 1"
+              (click)="upvotePost()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 19V5M5 12l7-7 7 7" />
+              </svg>
+            </button>
+            <span class="vote-count">{{ postVoteCount }}</span>
+            <button
+              *ngIf="canUserVoteOnPost()"
+              class="vote-btn downvote"
+              [class.active]="hasUserVoted(post.votes) === -1"
+              (click)="downvotePost()"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M12 5v14M5 12l7 7 7-7" />
+              </svg>
+            </button>
+          </div>
+          <div class="action-buttons">
+            <button class="comments-toggle" (click)="toggleCommentsSection()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+              </svg>
+              {{ post.comments?.length || 0 }} Comments
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comments Section -->
+      <div class="comments-section" [class.hidden]="!showComments">
+        <div class="comments-header">
+          <h3>Comments</h3>
+          <button *ngIf="!post?.stopComments" (click)="showCommentForm = !showCommentForm" class="add-comment-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 5v14M5 12h14"></path>
+            </svg>
+            Add Comment
+          </button>
+        </div>
+
+        <!-- Comment Form -->
+        <div *ngIf="showCommentForm && !post?.stopComments" class="comment-form">
+          <div class="form-group">
+            <label for="comment-text">Comment</label>
+            <textarea
+              id="comment-text"
+              [(ngModel)]="newCommentText"
+              placeholder="Write your comment..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-group">
+            <label for="comment-image">Image URL (optional)</label>
+            <input
+              type="url"
+              id="comment-image"
+              [(ngModel)]="newCommentImageUrl"
+              placeholder="Enter image URL"
+            />
+          </div>
+
+          <div *ngIf="commentError" class="error-message">
+            {{ commentError }}
+          </div>
+
+          <div class="form-actions">
+            <button class="cancel-btn" (click)="cancelComment()">Cancel</button>
+            <button
+              class="submit-btn"
+              (click)="submitComment()"
+              [disabled]="isSubmittingComment"
+            >
+              {{ isSubmittingComment ? 'Posting...' : 'Post Comment' }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Comments List -->
+        <div class="comments-list">
+          <div *ngFor="let comment of post?.comments" class="comment-item">
+            <div class="comment-header">
+              <div class="comment-user">
+                <span class="username">{{ comment.user?.username || 'Unknown' }}</span>
+                <span class="comment-score">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                  </svg>
+                  {{ comment.user?.score || 0 }}
+                </span>
+                <span class="comment-date">{{ formatDate(comment.dateTime) }}</span>
+              </div>
+              <div class="comment-actions">
+                <div class="vote-controls">
+                  <button class="vote-btn" [class.active]="hasUserVoted(comment.votes) === 1" (click)="upvoteComment(comment)" [disabled]="!canUserVoteOnComment(comment)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+                    </svg>
+                  </button>
+                  <span class="vote-count">{{ getVoteCount(comment.votes) }}</span>
+                  <button class="vote-btn" [class.active]="hasUserVoted(comment.votes) === -1" (click)="downvoteComment(comment)" [disabled]="!canUserVoteOnComment(comment)">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-down" viewBox="0 0 16 16">
+                      <path fill-rule="evenodd" d="M8 1a.5.5 0 0 1 .5.5v11.793l3.146-3.147a.5.5 0 0 1 .708.708l-4 4a.5.5 0 0 1-.708 0l-4-4a.5.5 0 0 1 .708-.708L7.5 14.293V1.5A.5.5 0 0 1 8 1"/>
+                    </svg>
+                  </button>
+                </div>
+                <button *ngIf="canEditComment(comment)" class="edit-comment-btn" (click)="startEditingComment(comment)">
+                  Edit
+                </button>
+                <button *ngIf="canDeleteComment(comment)" class="delete-btn" (click)="deleteComment(comment.id!)">
+                  Delete
+                </button>
+              </div>
+            </div>
+
+            <!-- Comment Edit Form -->
+            <div *ngIf="comment.id === editingCommentId" class="comment-edit-form">
+              <div class="form-group">
+                <label for="edit-comment-text-{{comment.id}}">Comment</label>
+                <textarea
+                  id="edit-comment-text-{{comment.id}}"
+                  [(ngModel)]="editedCommentText"
+                  rows="3"
+                ></textarea>
+              </div>
+
+              <div class="form-group">
+                <label for="edit-comment-image-{{comment.id}}">Image URL (optional)</label>
+                <input
+                  type="url"
+                  id="edit-comment-image-{{comment.id}}"
+                  [(ngModel)]="editedCommentImageUrl"
+                  placeholder="Enter image URL"
+                />
+              </div>
+
+              <div class="form-actions">
+                <button class="cancel-btn" (click)="cancelEditingComment()">Cancel</button>
+                <button
+                  class="submit-btn"
+                  (click)="saveCommentChanges(comment.id!)"
+                  [disabled]="isSubmittingCommentEdit"
+                >
+                  {{ isSubmittingCommentEdit ? 'Saving...' : 'Save Changes' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Comment Content (hidden when editing) -->
+            <div *ngIf="comment.id !== editingCommentId" class="comment-content">
+              <p class="comment-text">{{ comment.text }}</p>
+              <div class="comment-image" *ngIf="comment.pictureUrl">
+                <img [src]="comment.pictureUrl" alt="Comment image" (error)="handleImageError($event)" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

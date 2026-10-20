@@ -1,0 +1,131 @@
+/* Paletă de culori cu tonuri calde */
+$background-color: #f5f3f0; /* Bej foarte deschis */
+$primary-color: #000000; /* Negru */
+$accent-bej: #c7a17a; /* Bej cald */
+$accent-brown-light: #a06f4b; /* Maro deschis */
+$accent-brown-dark: #654321; /* Maro închis */
+$error-color: #d32f2f; /* Roșu pentru erori */
+
+/* Imaginea de fundal */
+.signup-container {
+  position: fixed;
+  inset: 0;
+  background: url("https://images.unsplash.com/photo-1524253482453-3fed8d2fe12b")
+    no-repeat center center fixed;
+  background-size: cover;
+  font-family: "Arial", sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  z-index: -1;
+}
+
+/* Formularul de signup */
+.signup-container form {
+  margin-top: 100px;
+  background-color: rgba(255, 255, 255, 0.8);
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 400px;
+  text-align: left;
+}
+
+/* Titlul formularului */
+.signup-container h2 {
+  color: $primary-color;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+/* Etichetele input-urilor */
+.signup-container label {
+  display: block;
+  margin-bottom: 5px;
+  color: $primary-color;
+}
+
+/* Stil pentru input-uri */
+.signup-container input {
+  width: 90%;
+  padding: 10px;
+  border: 2px solid $accent-brown-light;
+  border-radius: 8px;
+  background-color: $background-color;
+  margin-bottom: 15px;
+  transition: all 0.3s ease;
+  text-align: left;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
+.signup-container input:focus {
+  border-color: $primary-color;
+  background-color: white;
+}
+
+/* Butonul de signup */
+.signup-container button {
+  width: 100%;
+  padding: 12px;
+  background-color: $accent-brown-light;
+  color: $primary-color;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.signup-container button:hover {
+  background-color: $accent-brown-dark;
+}
+
+.signup-container button:disabled {
+  background-color: #ddd;
+  cursor: not-allowed;
+}
+
+/* Linkul de navigare pentru Login */
+.signup-container a {
+  color: $accent-brown-light;
+  text-decoration: underline;
+  font-weight: bold;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.signup-container a:hover {
+  color: $accent-brown-dark;
+}
+
+/* Mesaj de eroare pentru input-uri */
+.signup-container .error {
+  color: $error-color;
+  font-size: 12px;
+  display: block;
+  margin-top: 5px;
+  text-align: left;
+}
+
+/* Header */
+.header {
+  background-color: $accent-brown-light;
+  color: $primary-color;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  padding: 10px 0;
+}
+
+.header-content {
+  position: relative;
+  max-width: none;
+  margin: 0;
+  padding-left: 50px;
+}

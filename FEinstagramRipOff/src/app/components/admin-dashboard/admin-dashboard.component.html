@@ -1,0 +1,214 @@
+<div class="admin-dashboard">
+  <!-- Add the header component -->
+  <app-header></app-header>
+
+  <div class="dashboard-container">
+    <div class="dashboard-header">
+      <h2>Admin Dashboard</h2>
+      <div class="admin-badge">Administrator</div>
+    </div>
+
+    <div class="dashboard-content">
+      <!-- Users Section -->
+      <div class="section">
+        <h3>
+          Users
+          <span class="count-badge">{{ users.length }}</span>
+        </h3>
+        <div class="search-bar">
+          <input [(ngModel)]="userSearchTerm" placeholder="Search users..." />
+        </div>
+
+        <!-- Loading state -->
+        <div *ngIf="loading.users" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading users...</p>
+        </div>
+
+        <!-- Error state -->
+        <div *ngIf="error.users" class="error-state">
+          <p>{{ error.users }}</p>
+        </div>
+
+        <div class="list" *ngIf="!loading.users && !error.users">
+          <div *ngFor="let user of filteredUsers" class="item-card">
+            <div class="item-header">
+              <h4>{{ user.username }}</h4>
+              <div class="item-actions">
+                <button class="edit-btn" (click)="editUser(user)">Edit</button>
+                <button class="delete-btn" (click)="deleteUser(user)">Delete</button>
+              </div>
+            </div>
+            <div class="item-details">
+              <div class="detail-row">
+                <label>Email:</label>
+                <span>{{ user.email }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Phone:</label>
+                <span>{{ user.phone_number || 'Not provided' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Role:</label>
+                <span class="role" [ngClass]="user.role.toLowerCase()">{{ user.role }}</span>
+                <button class="small-btn" (click)="changeUserRole(user)">
+                  Change to {{ user.role === 'ADMIN' ? 'User' : 'Admin' }}
+                </button>
+              </div>
+              <div class="detail-row">
+                <label>Status:</label>
+                <span class="status" [ngClass]="{'banned': user.isBanned, 'not-banned': !user.isBanned}">
+                  {{ user.isBanned ? 'Banned' : 'Active' }}
+                </span>
+                <button class="small-btn" (click)="toggleUserBan(user)">
+                  {{ user.isBanned ? 'Unban' : 'Ban' }}
+                </button>
+              </div>
+              <div class="detail-row">
+                <label>Posts:</label>
+                <span>{{ user.postCount || 0 }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Comments:</label>
+                <span>{{ user.commentCount || 0 }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="filteredUsers.length === 0 && !loading.users" class="empty-state">
+            <p>No users found matching your search.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Posts Section -->
+      <div class="section">
+        <h3>
+          Posts
+          <span class="count-badge">{{ posts.length }}</span>
+        </h3>
+        <div class="search-bar">
+          <input [(ngModel)]="postSearchTerm" placeholder="Search posts..." />
+        </div>
+
+        <!-- Loading state -->
+        <div *ngIf="loading.posts" class="loading-state">
+          <div class="spinner"></div>
+          <p>Loading posts...</p>
+        </div>
+
+        <!-- Error state -->
+        <div *ngIf="error.posts" class="error-state">
+          <p>{{ error.posts }}</p>
+        </div>
+
+        <div class="list" *ngIf="!loading.posts && !error.posts">
+          <div *ngFor="let post of filteredPosts" class="item-card">
+            <div class="item-header">
+              <h4>{{ post.title }}</h4>
+              <div class="item-actions">
+                <button class="details-btn" (click)="viewPostDetails(post.id)">Details</button>
+                <button class="delete-btn" (click)="deletePost(post)">Delete</button>
+              </div>
+            </div>
+            <div class="item-details">
+              <div class="detail-row">
+                <label>Author:</label>
+                <span>{{ post.user.username || 'Unknown' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Date:</label>
+                <span>{{ post.dateTime | date:'medium' }}</span>
+              </div>
+              <div class="detail-row">
+                <label>Content:</label>
+                <span>{{ post.text }}</span>
+              </div>
+              <div class="detail-row" *ngIf="post.pictureUrl">
+                <label>Image:</label>
+                <img *ngIf="post.pictureUrl" [src]="post.pictureUrl" alt="Post image" class="post-thumbnail" />
+                <span *ngIf="!post.pictureUrl">No image</span>
+              </div>
+              <div class="detail-row">
+                <label>Comments:</label>
+                <span>{{ post.comments.length || 0 }} comments</span>
+                <button class="small-btn" (click)="post.stopComments = !post.stopComments">
+                  {{ post.stopComments ? 'Enable Comments' : 'Disable Comments' }}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Empty state -->
+          <div *ngIf="filteredPosts.length === 0 && !loading.posts" class="empty-state">
+            <p>No posts found matching your search.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div *ngIf="isEditingUser" class="modal-overlay" (click)="closeModal($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit User</h3>
+        <button class="close-btn" (click)="cancelUserEdit()">X</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input id="username" [(ngModel)]="editedUser.username" placeholder="Username" />
+        </div>
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input id="email" [(ngModel)]="editedUser.email" placeholder="Email" type="email" />
+        </div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input id="phone" [(ngModel)]="editedUser.phone_number" placeholder="Phone Number" />
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancelUserEdit()">Cancel</button>
+          <button class="save-btn" (click)="saveUserChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Post Modal -->
+  <div *ngIf="isEditingPost" class="modal-overlay" (click)="closeModal($event)">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Edit Post</h3>
+        <button class="close-btn" (click)="cancelPostEdit()">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input id="post-title" [(ngModel)]="editedPost.title" placeholder="Title" />
+        </div>
+        <div class="form-group">
+          <label for="post-content">Content</label>
+          <textarea id="post-content" [(ngModel)]="editedPost.text" placeholder="Content" rows="4"></textarea>
+        </div>
+        <div class="form-group">
+          <label for="post-image">Image URL</label>
+          <input id="post-image" [(ngModel)]="editedPost.pictureUrl" placeholder="Image URL" />
+        </div>
+        <div class="form-group">
+          <label for="post-comments">Comments</label>
+          <select id="post-comments" [(ngModel)]="editedPost.stopComments">
+            <option [ngValue]="false">Enabled</option>
+            <option [ngValue]="true">Disabled</option>
+          </select>
+        </div>
+        <div class="form-actions">
+          <button class="cancel-btn" (click)="cancelPostEdit()">Cancel</button>
+          <button class="save-btn" (click)="savePostChanges()">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
